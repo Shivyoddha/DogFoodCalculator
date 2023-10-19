@@ -15,6 +15,7 @@ def app():
         data = st.json_request()
         activity = data.get("activity")
         weight = data.get("weight")
+        print("Activity and data recieved")
     except:
         st.json({"error": "Invalid JSON data"})
         return
