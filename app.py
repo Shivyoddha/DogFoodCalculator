@@ -1,5 +1,7 @@
-import streamlit as st
+from flask import Flask, request, jsonify
 import json
+
+app = Flask(__name__)
 
 def calculate_food(activity, weight):
     if activity and weight:
@@ -8,23 +10,16 @@ def calculate_food(activity, weight):
     else:
         return {"error": "Please provide both activity level and weight."}
 
-# Define Streamlit app as a function
-def app():
-    # Parse JSON data from the POST request
+@app.route('/calculate_food', methods=['POST'])
+def calculate_food_api():
     try:
-        data = st.json_request()
+        data = request.get_json()
         activity = data.get("activity")
         weight = data.get("weight")
-    except:
-        st.json({"error": "Invalid JSON data"})
-        return
-    
-    # Calculate recommended food
-    result = calculate_food(activity, weight)
-    
-    # Respond with the result as JSON
-    st.json(result)
+        result = calculate_food(activity, weight)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"error": str(e)})
 
-# Run the Streamlit app
-if __name__ == "__main__":
-    app()
+if __name__ == '__main__':
+    app.run(debug=True)
