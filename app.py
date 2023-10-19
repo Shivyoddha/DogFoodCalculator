@@ -1,18 +1,30 @@
 import streamlit as st
 import json
 
-@st.cache
 def calculate_food(activity, weight):
     if activity and weight:
-        calculated_amount = round(activity / weight,2)
+        calculated_amount = round(activity / weight, 2)
         return {"recommendedFood": calculated_amount}
     else:
         return {"error": "Please provide both activity level and weight."}
 
-st.title("Dog Food Calculator API")
+# Define Streamlit app as a function
+def app():
+    # Parse JSON data from the POST request
+    try:
+        data = st.json_request()
+        activity = data.get("activity")
+        weight = data.get("weight")
+    except:
+        st.json({"error": "Invalid JSON data"})
+        return
+    
+    # Calculate recommended food
+    result = calculate_food(activity, weight)
+    
+    # Respond with the result as JSON
+    st.json(result)
 
-activity = st.slider("Select Activity Level", min_value=0, max_value=200, step=1)
-weight = st.slider("Enter Weight (lbs)", min_value=0, max_value=200, step=1)
-
-result = calculate_food(activity, weight)
-st.json(result)
+# Run the Streamlit app
+if __name__ == "__main__":
+    app()
